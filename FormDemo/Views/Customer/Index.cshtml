@@ -1,0 +1,122 @@
+﻿@model DataTable;
+@using System.Data;
+@using System.Globalization;
+<span class=" text-danger" >@TempData["ErrorMessage"]</span>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<h2 style="text-align:center;font-weight:700">Customer List</h2>
+<table class="table table-hover table-striped">
+    <thead>
+        <tr class="table-dark">
+            <th scope="col">Customer Id</th>
+            <th scope="col">Customer Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">GST No</th>
+            <th scope="col">Home Address</th>
+            <th scope="col">Mobile No</th>
+            <th scope="col">City Name</th>
+            <th scope="col">PinCode</th>
+            <th scope="col">Net Amount</th>
+            <th scope="col">User Id</th>
+            <th scope="col">Action</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (DataRow user in Model.Rows)
+        {
+            <tr>
+
+                <td>@user["CustomerID"]</td>
+                <td>@user["CustomerName"]</td>
+                <td>@user["Email"]</td>
+                <td>@user["GSTNo"]</td>
+                <td>@user["HomeAddress"]</td>             
+                <td>@user["MobileNo"]</td>
+                <td>@user["CityName"]</td>
+                <td>@user["PinCode"]</td>
+                <td>@string.Format(new CultureInfo("hi-IN"), "{0:N0}", user["NetAmount"]) </td>
+                <td>@user["UserName"]</td>
+                <td>
+                    <a class="btn btn-outline-success btn-xs" asp-controller="Customer" asp-action="CustomerForm" asp-route-CustomerId="@user["CustomerID"]">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                  <td>
+                    <form method="post" asp-controller="Customer" asp-action="deleteCustomer">
+                        <input type="hidden" name="CustomerID" value="@user["CustomerID"]" />
+                        <button type="button" class="btn btn-outline-danger btn-xs" onclick="confirmDelete('@user["CustomerID"]')">
+                            <i class="bi bi-x"></i> 
+                        </button>
+                    </form>
+                </td>
+                </td>
+
+            </tr>
+        }
+        <a type="button" asp-controller="Customer" asp-action="CustomerForm" class="btn btn-primary">Add Customer</a>
+
+    </tbody>
+</table>
+
+
+<script type="text/javascript">
+    function confirmDelete(customerId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Perform the delete operation via AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("deleteCustomer", "Customer")', // Ensure this URL points to the correct action
+                    data: { CustomerID: customerId },
+                    success: function (response) {
+                        if (response.success) {
+                            // Show success alert
+                            Swal.fire(
+                                'Deleted!',
+                                'The customer has been deleted.',
+                                'success'
+                            ).then(() => {
+                                // Refresh the page or redirect as needed
+                                window.location.reload();
+                            });
+                        } else {
+                            // Show error alert with the message from the server
+                            Swal.fire(
+                                'Error!',
+                                response.errorMessage || 'An unexpected error occurred.',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function (xhr) {
+                        // Show error alert with network/server error
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while deleting the customer. ' + xhr.responseText,
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+</script>

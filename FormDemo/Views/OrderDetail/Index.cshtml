@@ -1,0 +1,114 @@
+﻿@model DataTable;
+@using System.Data;
+@using System.Globalization;
+<span class=" text-danger">@TempData["ErrorMessage"]</span>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<h2 style="text-align:center;font-weight:700">OrderDetail List</h2>
+<table class="table table-hover table-striped">
+    <thead>
+        <tr class="table-primary">
+            <th scope="col">OrderDetail ID</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">User Name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Total Amount</th>
+            <th scope="col">Action</th>
+            <th></th>
+            
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (DataRow dataRow in Model.Rows)
+        {
+            <tr>
+
+                <td>@dataRow["OrderDetailID"]</td>                
+                <td>@dataRow["ProductName"]</td>
+                <td>@dataRow["UserName"]</td>
+                <td>@dataRow["Quantity"]</td>
+                <td>@string.Format(new CultureInfo("hi-IN"), "{0:N0}", dataRow["Amount"]) </td>
+                <td>@string.Format(new CultureInfo("hi-IN"), "{0:N0}", dataRow["TotalAmount"]) </td>
+                <td>
+                    <a class="btn btn-outline-success btn-xs" asp-controller="OrderDetail" asp-action="Detail" asp-route-OrderDetailID="@dataRow["OrderDetailID"]">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                <td>
+                    <form id="deleteForm-@dataRow["OrderDetailID"]" method="post" asp-controller="OrderDetail" asp-action="deleteOrderDetail">
+                        <input type="hidden" name="OrderDetailID" value="@dataRow["OrderDetailID"]" />
+                        <button type="button" class="btn btn-outline-danger btn-xs" onclick="confirmDelete('@dataRow["OrderDetailID"]')">
+                            <i class="bi bi-x"></i> 
+                        </button>
+                    </form>
+                </td>
+                </td>
+                
+            </tr>
+        }
+
+        <a type="button" asp-controller="OrderDetail" asp-action="Detail" class="btn btn-primary">Add OrderDetail</a>
+
+
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    function confirmDelete(orderDetailID) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Perform the delete operation via AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DeleteOrderDetail", "OrderDetail")',
+                    data: { OrderDetailID: orderDetailID },
+                    success: function (response) {
+                        if (response.success) {
+                            // Show success alert
+                            Swal.fire(
+                                'Deleted!',
+                                'Your file has been deleted.',
+                                'success'
+                            ).then(() => {
+                                // Refresh the page or redirect as needed
+                                window.location.reload();
+                            });
+                        } else {
+                            // Show error alert with the error message from the server
+                            Swal.fire(
+                                'Error!',
+                                response.errorMessage,
+                                'error'
+                            );
+                        }
+                    },
+                    error: function () {
+                        Swal.fire(
+                            'Error!',
+                            'An unexpected error occurred while deleting the record.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+

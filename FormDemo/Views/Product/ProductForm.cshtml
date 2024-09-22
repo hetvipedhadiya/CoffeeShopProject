@@ -1,0 +1,89 @@
+﻿@model ProductModel
+
+<p class="text-gray" style="text-align:center; font-size:larger;font-weight:bold">@ViewBag.FormTitle</p>
+
+<section class="section">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">General Form Elements</h5>
+                    <span class="align-middle">
+                        <!-- General Form Elements -->
+                        <form class="align-middle" asp-action="Save">
+                            <div class="row mb-3">
+                                <div class="col-sm-10">
+                                    <input type="hidden" asp-for="ProductId" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="inputText" class="col-sm-6 col-form-label">
+                                    <span class="text-danger">*</span> Product Name
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="text" asp-for="ProductName" class="form-control">
+                                    <span asp-validation-for="ProductName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="inputText" class="col-sm-6 col-form-label">
+                                    <span class="text-danger">*</span> Product Price
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="text" asp-for="ProductPrice" class="form-control">
+                                    <span asp-validation-for="ProductPrice" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="inputText" class="col-sm-6 col-form-label">
+                                    <span class="text-danger">*</span> Product Code
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="text" asp-for="ProductCode" class="form-control">
+                                    <span asp-validation-for="ProductCode" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="inputText" class="col-sm-6 col-form-label">
+                                    <span class="text-danger">*</span> Description
+                                </label>
+                                <div class="col-sm-10">
+                                    <textarea asp-for="Description" class="form-control"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="inputSelect" class="col-sm-6 col-form-label">
+                                    <span class="text-danger">*</span> Select User
+                                </label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" asp-for="UserId" asp-items="@(new SelectList(ViewBag.UserList, "UserID", "UserName"))">
+                                        <option value="">Select user</option>
+                                    </select>
+                                    <span asp-validation-for="UserId" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label">Submit Button</label>
+                                <div class="col-sm-10">
+                                    <button type="submit" class="btn btn-primary">Submit Form</button>
+                                </div>
+                            </div>
+                        </form><!-- End General Form Elements -->
+                    </span>
+                </div>
+            </div>
+        </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

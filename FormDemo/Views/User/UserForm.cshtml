@@ -1,0 +1,71 @@
+﻿@model FormDemo.Models.UserModel
+
+<p class="text-gray" style="text-align:center; font-size:larger;font-weight:bold">@ViewBag.FormTitle</p>
+
+<section class="section">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">User Form</h5>
+                    <form asp-action="Save" asp-controller="User" method="post">
+                        <input type="hidden" asp-for="UserID" class="form-control" />
+
+                        <div class="form-group">
+                            <label asp-for="UserName" class="col-form-label">
+                                <span class="text-danger">*</span> User Name
+                            </label>
+                            <input type="text" asp-for="UserName" class="form-control" />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Email" class="col-form-label">
+                                <span class="text-danger">*</span> Email
+                            </label>
+                            <input type="email" asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Password" class="col-form-label">
+                                <span class="text-danger">*</span> Password
+                            </label>
+                            <input type="text" asp-for="Password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="MobileNo" class="col-form-label">
+                                <span class="text-danger">*</span> Mobile No
+                            </label>
+                            <input type="text" asp-for="MobileNo" class="form-control" />
+                            <span asp-validation-for="MobileNo" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Address" class="col-form-label">
+                                <span class="text-danger">*</span> Address
+                            </label>
+                            <textarea asp-for="Address" class="form-control"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group form-check">
+                            <input type="checkbox" asp-for="isActive" class="form-check-input" checked />
+                            <label asp-for="isActive" class="form-check-label">Is Active?</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

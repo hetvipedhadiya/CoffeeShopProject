@@ -1,0 +1,115 @@
+﻿@model OrderModel
+<p class="text-gray" style="text-align:center; font-size:larger;font-weight:bold">@ViewBag.FormTitle</p>
+<section class="section">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">General Form Elements</h5>
+                    <span class="align-middle">
+                        <!-- General Form Elements -->
+                        <form class="align-middle" method="post" asp-controller="Order" asp-action="SaveOrder">
+                            <div class="row mb-3">
+                                <div class="col-sm-10">
+                                    <input type="hidden" asp-for="OrderID" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="inputText" class="col-sm-4 col-form-label">
+                                    <span class="text-danger">*</span> Payment Mode
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="text" asp-for="PaymentMode" class="form-control">
+                                    <span asp-validation-for="PaymentMode" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="inputText" class="col-sm-4 col-form-label">
+                                    <span class="text-danger">*</span> Shipping Address
+                                </label>
+                                <div class="col-sm-10">
+                                    <textarea asp-for="ShoppingAddress" class="form-control"></textarea>
+                                    <span asp-validation-for="ShoppingAddress" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="inputNumber" class="col-sm-4 col-form-label">
+                                    <span class="text-danger">*</span> Total Payment
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="text" asp-for="TotalAmount" class="form-control">
+                                    <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="inputDate" class="col-sm-4 col-form-label">
+                                    <span class="text-danger">*</span> Order Date
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="date" asp-for="OrderDate" class="form-control">
+                                    <span asp-validation-for="OrderDate" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="text" class="col-sm-4 col-form-label">
+                                    <span class="text-danger">*</span> Order Number
+                                </label>
+                                <div class="col-sm-10">
+                                    <input type="text" asp-for="OrderNumber" class="form-control">
+                                    <span asp-validation-for="OrderNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label">
+                                    <span class="text-danger">*</span> Select Customer
+                                </label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" asp-for="CustomerID">
+                                        <option value="">Select Customer</option>
+                                        @foreach (var customer in ViewBag.CustomerList)
+                                        {
+                                            <option value="@customer.CustomerID">@customer.CustomerName</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="CustomerID" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label">
+                                    <span class="text-danger">*</span> Select User
+                                </label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" asp-for="UserID" asp-items="@(new SelectList(ViewBag.UserList, "UserID", "UserName"))">
+                                        <option value="">Select User</option>
+                                    </select>
+                                    <span asp-validation-for="UserID" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label">Submit Button</label>
+                                <div class="col-sm-10">
+                                    <button type="submit" class="btn btn-primary">Submit Form</button>
+                                </div>
+                            </div>
+
+                        </form><!-- End General Form Elements -->
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,116 @@
+﻿@model DataTable;
+@using System.Data;
+@using System.Globalization;
+<span class=" text-danger">@TempData["ErrorMessage"]</span>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<h2 style="text-align:center;font-weight:700">Order List</h2>
+<table class="table table-hover table-striped">
+    <thead>
+        <tr class="table-info">
+            <th scope="col">Order ID</th>
+            <th scope="col">Order Date</th>
+            <th scope="col">Customer ID</th>
+            <th scope="col">Payment Mode</th>
+            <th scope="col">Total Payment</th>
+            <th scope="col">Shipping Address</th>
+            <th scope="col">User Id</th>
+            <th scope="col">Order Number</th>
+            <th scope="col">Action</th>
+            <th></th>
+
+        </tr>
+    </thead>
+    <tbody>
+        
+            @foreach (DataRow dataRow in Model.Rows)
+            {
+                <tr>
+
+                    <td>@dataRow["OrderID"]</td>
+                    <td>@dataRow["OrderDate"]</td>
+                    <td>@dataRow["CustomerID"]</td>
+                    <td>@dataRow["PaymentMode"]</td>
+                    <td>@string.Format(new CultureInfo("hi-IN"), "{0:N0}", dataRow["TotalAmount"]) </td>
+                    <td>@dataRow["ShippingAddress"]</td>
+                    <td>@dataRow["UserName"]</td>
+                     <td>@dataRow["OrderNumber"]</td> 
+                 
+                <td>
+                    <a class="btn btn-outline-success btn-xs" asp-controller="Order" asp-action="OrderForm" asp-route-OrderId="@dataRow["OrderID"]">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                <td>
+                    <form method="post" asp-action="deleteOrder" asp-controller="Order">
+                        <input type="hidden" name="OrderID" value="@dataRow["OrderID"]"/>
+                        <button type="button" class="btn btn-outline-danger btn-xs" onclick="confirmDelete('@dataRow["OrderID"]')">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </form>
+                </td>
+                </td>
+                </tr>
+            }
+
+        <a type="button" asp-controller="Order" asp-action="OrderForm" class="btn btn-primary">Add Order</a>
+
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    function confirmDelete(orderId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Perform the delete operation via AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("deleteOrder", "Order")', // Ensure the correct action name
+                    data: { OrderID: orderId },
+                    success: function (response) {
+                        if (response.success) {
+                            // Show success alert
+                            Swal.fire(
+                                'Deleted!',
+                                'The order has been deleted.',
+                                'success'
+                            ).then(() => {
+                                // Refresh the page or redirect as needed
+                                window.location.reload();
+                            });
+                        } else {
+                            // Show a custom error alert with the error message from the server
+                            Swal.fire(
+                                'Error!',
+                                response.errorMessage || 'An unexpected error occurred.',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function (xhr) {
+                        // Handle network/server errors
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while deleting the order. ' + xhr.responseText,
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+</script>

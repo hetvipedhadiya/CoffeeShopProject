@@ -1,0 +1,123 @@
+﻿@model DataTable;
+@using System.Data;
+@using System.Globalization;
+<span class=" text-danger">@TempData["ErrorMessage"]</span>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<h2 style="text-align:center;font-weight:700">Bill List</h2>
+<table class="table table-hover table-striped">
+    <thead>
+        <tr class="table-info">
+            <th scope="col">Bill ID</th>
+            <th scope="col">Bill Number</th>
+            <th scope="col">Bill Date</th>
+            <th scope="col">Order Date</th>
+            <th scope="col">Total Amount</th>
+            <th scope="col">Discount</th>
+            <th scope="col">Net Amount</th>
+            <th scope="col">User ID</th>
+            <th scope="col">Action</th>
+            <th scope="col"></th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (DataRow  user in Model.Rows)
+        {
+            <tr>
+
+                <td>@user["BillID"]</td>
+                <td>@user["BillNumber"]</td>
+                <td>@user["BillDate"]</td>
+                <td>@user["OrderDate"]</td>
+                <td>@string.Format(new CultureInfo("hi-IN"), "{0:N0}", user["TotalAmount"]) </td>
+                <td>@user["Discount"]</td>
+                <td>@string.Format(new CultureInfo("hi-IN"), "{0:N0}", user["NetAmount"]) </td>
+                <td>@user["UserName"]</td>
+                <td>
+                    <a class="btn btn-outline-success btn-xs" asp-controller="Bills" asp-action="BillForm" asp-route-BillId="@user["BillID"]">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                <td>
+                    <form method="post" asp-controller="Bills" asp-action="deleteBill">
+                        <input type="hidden" name="BillID" value="@user["BillID"]" />
+                        <button type="button" class="btn btn-outline-danger btn-xs" onclick="confirmDelete('@user["BillID"]')">
+                            <i class="bi bi-x"></i> 
+                        </button>
+                    </form>
+                </td>
+                </td>
+               
+
+            </tr>
+        }
+            <a asp-controller="Bills" asp-action="BillForm" type="button" class="btn btn-primary m-3">Add Bill</a>
+        <a  type="button" class="btn btn-primary m-3">Exel Export</a>
+
+        
+
+    </tbody>
+</table>
+
+
+
+
+<script type="text/javascript">
+    function confirmDelete(billId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Perform the delete operation via AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("deleteBill", "Bills")', // Ensure this URL points to the correct action
+                    data: { BillID: billId },
+                    success: function (response) {
+                        if (response.success) {
+                            // Show success alert
+                            Swal.fire(
+                                'Deleted!',
+                                'The bill has been deleted successfully.',
+                                'success'
+                            ).then(() => {
+                                // Refresh the page or redirect as needed
+                                window.location.reload();
+                            });
+                        } else {
+                            // Show error alert with the message from the server
+                            Swal.fire(
+                                'Error!',
+                                response.errorMessage || 'An unexpected error occurred.',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function (xhr) {
+                        // Show error alert with network/server error
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while deleting the bill. ' + xhr.responseText,
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,118 @@
+﻿@model DataTable;
+@using System.Data;
+@using System.Globalization;
+
+<span class=" text-danger">@TempData["ErrorMessage"]</span>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<h2 style="text-align:center;font-weight:700">Product List</h2>
+<table class="table table-hover table-striped">
+    <thead class="table-info">
+        <tr>
+            <th>Product Id</th>
+            <th>Product Name</th>
+            <th>Product Price</th>
+            <th>Product Code</th>
+            <th>Description</th>
+            <th>User Id</th>
+            <th>Action</th>
+            <th></th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        
+        @foreach (DataRow dataRow in Model.Rows)
+        {
+            <tr>
+
+        <td>@dataRow["ProductID"]</td>
+        <td>@dataRow["ProductName"]</td>
+        <td>@string.Format(new CultureInfo("hi-IN"), "{0:N0}", dataRow["ProductPrice"]) </td>
+        <td>@dataRow["ProductCode"]</td>
+        <td>@dataRow["Description"]</td>
+        <td>@dataRow["UserName"]</td>
+                <td>
+                    <a class="btn btn-outline-success btn-xs" asp-controller="Product" asp-action="ProductForm" asp-route-ProductID="@dataRow["ProductID"]">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                 <td>
+                    <form method="post" asp-controller="Product" asp-action="deleteProduct">
+                        <input type="hidden" name="ProductID" value="@dataRow["ProductID"]" />
+                        <button type="button" class="btn btn-outline-danger btn-xs" onclick="confirmDelete('@dataRow["ProductID"]')">
+                            <i class="bi bi-x"></i> 
+                        </button>
+                    </form>
+                </td>
+                </td>
+            
+                
+                
+            </tr>
+        }
+        <a type="button" asp-controller="Product" asp-action="ProductForm" style="align-content:end" class="btn btn-primary m-3 p-3">Add Product</a>
+        <a type="button" asp-controller="Product" asp-action="exportExcel" style="align-items:self-end" class="btn btn-warning m-3 p-3">Export Excel</a>
+       
+
+
+    </tbody>
+</table>
+
+
+<script type="text/javascript">
+    function confirmDelete(productId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Perform the delete operation via AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("deleteProduct", "Product")', // Ensure this URL is correct
+                    data: { ProductID: productId },
+                    success: function (response) {
+                        if (response.success) {
+                            // Show success alert
+                            Swal.fire(
+                                'Deleted!',
+                                'Your product has been deleted successfully.',
+                                'success'
+                            ).then(() => {
+                                // Refresh the page or redirect as needed
+                                window.location.reload();
+                            });
+                        } else {
+                            // Show error alert with the message from the server
+                            Swal.fire(
+                                'Error!',
+                                response.errorMessage || 'An unexpected error occurred.',
+                                'error'
+                            );
+                        }
+                    },
+                    error: function (xhr) {
+                        // Show error alert with network/server error
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while deleting the product. ' + xhr.responseText,
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+</script>
